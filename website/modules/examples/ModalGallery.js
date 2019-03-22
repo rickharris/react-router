@@ -1,5 +1,11 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  withRouter
+} from "react-router-dom";
 
 // This example shows how to render two different screens
 // (or the same screen in a different context) at the same url,
@@ -51,6 +57,7 @@ class ModalSwitch extends Component {
         <Switch location={isModal ? this.previousLocation : location}>
           <Route exact path="/" component={Home} />
           <Route path="/gallery" component={Gallery} />
+          <Route path="/some/:one/deep/:two/route" component={Deep} />
           <Route path="/img/:id" component={ImageView} />
         </Switch>
         {isModal ? <Route path="/img/:id" component={Modal} /> : null}
@@ -95,6 +102,8 @@ function Home() {
   return (
     <div>
       <Link to="/gallery">Visit the Gallery</Link>
+      <br />
+      <Link to="/some/123/deep/456/route">Go to some deep route</Link>
       <h2>Featured Images</h2>
       <ul>
         <li>
@@ -128,6 +137,42 @@ function Gallery() {
   );
 }
 
+function Deep({ match }) {
+  return (
+    <div>
+      <p>You can link from anywhere really deep too</p>
+      <p>
+        Params stick around: {match.params.one} {match.params.two}
+      </p>
+      <Deeper />
+      <p>
+        <Link
+          to={{
+            pathname: "/img/0",
+            state: { modal: true }
+          }}
+        >
+          Link to picture with Modal
+        </Link>
+        <br />
+        <Link to="/img/0">Without modal</Link>
+      </p>
+    </div>
+  );
+}
+
+const Deeper = withRouter(({ match }) => {
+  return (
+    <React.Fragment>
+      <p>This is from a nested component using withRouter.</p>
+      <p>
+        Params stick around on react-router master: {match.params.one}{" "}
+        {match.params.two}
+      </p>
+    </React.Fragment>
+  );
+});
+
 function ImageView({ match }) {
   let image = IMAGES[parseInt(match.params.id, 10)];
 
@@ -156,7 +201,9 @@ function Modal({ match, history }) {
       onClick={back}
       style={{
         position: "absolute",
-        top: 0,
+        // Just so you can see the rendered params in the background on "deep"
+        // example.
+        top: 200,
         left: 0,
         bottom: 0,
         right: 0,
