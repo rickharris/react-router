@@ -1,7 +1,7 @@
 import React from 'react'
 import createReactClass from 'create-react-class'
 import { render } from 'react-dom'
-import { browserHistory, Router, Route, IndexRoute, Link } from 'react-router'
+import { browserHistory, Router, Route, IndexRoute, Link, withRouter } from 'react-router'
 
 import withExampleBasename from '../withExampleBasename'
 
@@ -121,6 +121,7 @@ const Deep = createReactClass({
       <div>
         <p>You can link from anywhere really deep too</p>
         <p>Params stick around: {this.props.params.one} {this.props.params.two}</p>
+        <Deeper />
         <p>
           <Link to={{
             pathname: '/pictures/0',
@@ -136,6 +137,17 @@ const Deep = createReactClass({
     )
   }
 })
+
+const Deeper = withRouter(createReactClass({
+  render() {
+    return (
+      <div>
+        <p>You can link from anywhere really deep too</p>
+        <p>Params <i>do not</i> stick around: {this.props.params.one} {this.props.params.two}</p>
+      </div>
+    )
+  }
+}))
 
 const Picture = createReactClass({
   render() {
